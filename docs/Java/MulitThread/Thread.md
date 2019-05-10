@@ -16,9 +16,9 @@ syschronized是Java提供一种重量级的同步锁。
 syschronized属于可重入锁，即在同一锁程中，线程不需要再次获取同一把锁。
 执行同步代码块后首先要先执行monitorenter指令，退出的时候monitorexit指令。通过分析之后可以看出，使用Synchronized进行同步，其关键就是必须要对对象的监视器monitor进行获取，当线程获取monitor后才能继续往下执行，否则就只能等待。而这个获取的过程是互斥的，即同一时刻只有一个线程能够获取到monitor。
 syschronized作用在代码块上--通过指令
-![enter image description here](https://raw.githubusercontent.com/92649264634/StudyNote/master/images/MulitThread/15239761356461.png?token=AJWT2HFGXWE4FICUK3NKCKK42UCLK)
+![enter image description here](https://raw.githubusercontent.com/92649264634/StudyNote/master/images/MulitThread/15239761356461.png?token=AJWT2HH4TKZO5WGAFSFANGK42UDOW)
 syschronized作用在方法上--通过标识符
-![enter image description here](https://raw.githubusercontent.com/92649264634/StudyNote/master/images/MulitThread/164565794646.png?token=AJWT2HA5T6T7PC57I2T63CK42UCRO)
+![enter image description here](https://raw.githubusercontent.com/92649264634/StudyNote/master/images/MulitThread/164565794646.png?token=AJWT2HH6H67KVIQCGLXWGNK42UDUO)
 
 
 当线程进入到synchronized方法或者synchronized代码块时，线程切换到的是BLOCKED状态，而使用java.util.concurrent.locks下lock进行加锁的时候线程切换的是WAITING或者TIMED_WAITING状态，因为lock会调用LockSupport的方法
