@@ -1,17 +1,65 @@
-# 多线程
-1. volatile有什么作用？
- 	volatile是Java提供的一种轻量级的同步机制。在Java中的内存模型中，每一个线程都有自己的本地内存区（虚拟机栈，本地方法栈和程序计数器）。类的共享变量存储在主内存中（方法区和堆区）。本地内存保存了当前线程所使用的主内存的副本，线程对变量的所有操作都是保存在本地内存中的，而不能直接读写主内存的变量。
+## 多线程
+###  1. volatile有什么作用？
+volatile是Java提供的一种轻量级的同步机制。在Java中的内存模型中(JMM)，每一个线程都有自己的本地内存区（虚拟机栈，本地方法栈和程序计数器）。类的共享变量存储在主内存中（方法区和堆区）。本地内存保存了当前线程所使用的主内存的副本，线程对变量的所有操作都是保存在本地内存中的，而不能直接读写主内存的变量。
 ![enter image description here](https://raw.githubusercontent.com/92649264634/ImageAll/master/images/StudyNote/MulitThread/neicunjiaohuan.png)
 对一个变量声明为volatile，具有两种特性：
-特性1：保证共享变量对所有的线程可见性；
+> 特性一：保证共享变量对所有的线程可见性；
+
 a. 当写一个volatile变量时，JMM会把该线程对应的本地内存中的变量强制刷新		                   到主内存中去;
 b. 这个写会操作会导致其他线程中的缓存无效;
 注意：但是volatile是有局限性的，对于复合操作，给变量声明为volatile并不能解决共享变量在多线程模式下的安全问题。例如 i++操作（分解为读取、加一、赋值），即该操作不是原子性的。
-特性2：禁止指令重排序优化
+> 特性二：禁止指令重排序优化
+
 重排序是指编译器和处理器为了优化程序性能而对指令序列进行排序的一种手段
-![enter image description here](https://raw.githubusercontent.com/92649264634/ImageAll/master/images/StudyNote/MulitThread/1523488464656.png)
-上面我们提到过，为了提供程序并行度，编译器和处理器可能会对指令进行重排序，而上例中的1和2由于不存在数据依赖关系，则有可能会被重排序，先执行status=true再执行a=2。而此时线程B会顺利到达4处，而线程A中a=2这个操作还未被执行，所以b=a+1的结果也有可能依然等于2；
-2. sychronized
+示例代码：
+```java
+public class VoliteTest {
+
+	public int a = 1;
+
+	public boolean states = false;
+
+	// 假设该方法在线程A中执行
+	public void stateChange() {
+		a = 2; // 1
+		states = true; // 2
+	}
+
+	// 假设该方法在线程B中执行
+	public void run() {
+		if (states) {
+			int b = a + 2; // 3
+			System.out.println(b); // 4
+		}
+	}
+}
+```
+上面我们提到过，为了提供程序并行度，编译器和处理器可能会对指令进行重排序，而上例中的1和2由于不存在数据依赖关系，则有可能会被重排序，先执行status=true再执行a=2。而此时线程B会顺利到达4处，而线程A中a=2这个操作还未被执行，所以b=a+1的结果也有可能依然等于3；
+
+### 2. 标准的单例模式中，变量为什么要用volatile修饰？
+单例代码如下：
+```java
+public class SingleCla {
+
+	private static volatile SingleCla instance;
+
+	private SingleCla() {}
+
+	public static SingleCla getInstance() {
+		if (instance == null) {
+			synchronized (SingleCla.class) {
+				if (instance == null) {
+					instance = new SingleCla();
+				}
+			}
+		}
+		return instance;
+	}
+
+}
+```
+
+### 2. sychronized
 syschronized是Java提供一种重量级的同步锁。
 syschronized属于可重入锁，即在同一锁程中，线程不需要再次获取同一把锁。
 执行同步代码块后首先要先执行monitorenter指令，退出的时候monitorexit指令。通过分析之后可以看出，使用Synchronized进行同步，其关键就是必须要对对象的监视器monitor进行获取，当线程获取monitor后才能继续往下执行，否则就只能等待。而这个获取的过程是互斥的，即同一时刻只有一个线程能够获取到monitor。
@@ -51,7 +99,7 @@ Java SE 1.6中，锁一共有4种状态，级别从低到高依次是：无锁�
 
 
 
-3. sychronized和loclk有什么区别？
+### 3. sychronized和loclk有什么区别？
 
 4. 线程的安全性问题
 出现线程安全的主要来源于JMM的设计，主要集中在主内存和线程的工作内存而导致的内存可见性问题，以及重排序导致的问题。
