@@ -1,7 +1,14 @@
 package com.random.note;
 
-import junit.framework.TestCase;
+public class AppTest {
 
-public class AppTest extends TestCase {
-
+	public synchronized void test() {
+		System.out.println("test");
+	}
+	
+	public void test1() {
+		synchronized (AppTest.class) {
+			System.out.println("test1");
+		}
+	}
 }
