@@ -81,9 +81,9 @@ public class SingleCla {
 
 “instance = new SingleCla();”这行代码可以拆分为以下3行伪代码
 
-> memory = allocate();       // 1：分配对象的内存空间
-> ctorInstance(memory);   // 2：初始化对象
-> instance = memory;        // 3：设置instance指向刚分配的内存地址 
+> memory = allocate();       // 1：分配对象的内存空间  
+> ctorInstance(memory);   // 2：初始化对象  
+> instance = memory;        // 3：设置instance指向刚分配的内存地址  
 
 ​	如果instance变量不使用volatile声明，这3行伪代码就会产生指令重排序（可能为1->3->2）。这种情况下，其他线程就有可能获取到一个未初始化的对象，导致调用失败。
 
